@@ -1,0 +1,72 @@
+  version: '3.8'
+
+  services:
+    backend:
+      container_name: backend
+      build:
+        context: ./backend
+      command: python manage.py runserver 0.0.0.0:8000
+      volumes:
+        - ./backend:/app
+      env_file:
+        - ./backend/core/.env 
+      ports:
+        - "8000:8000"
+      depends_on:
+        - db
+        - redis
+      environment:
+        - DB_HOST=$${HOST}
+        - DB_NAME=$${SQL_NAME}
+        - DB_USER=$${SQL_USER}
+        - DB_PASSWORD=$${SQL_PASSWORD}
+
+    frontend:
+      container_name: frontend
+      build:
+        context: ./frontend
+      volumes:
+        - ./frontend:/app
+      ports:
+        - "3000:3000"
+      depends_on:
+        - backend
+
+    db:
+      container_name: postgres
+      image: postgres
+      volumes:    
+        - ./backend/data/postgres_data:/var/lib/postgresql/data
+      expose:
+        - '5432'
+
+    redis:
+      image: "redis:alpine"
+      restart: always
+      container_name: redis
+      command: redis-server
+      volumes:
+        - .:/redis-vol:/data 
+      ports:
+        - 6379:6379
+
+
+    celery:
+      build: ./backend
+      command: celery -A core worker -l INFO
+      container_name: celery
+      volumes:
+        - ./backend:/app
+      depends_on:
+        - backend
+        - redis
+        - db
+      environment:
+        - CELERY_BROKER=redis://redis:6379/0
+        - CELERY_BACKEND=redis://redis:6379/0
+
+  volumes:
+    postgres_data:
+
+
+
