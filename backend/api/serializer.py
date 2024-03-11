@@ -49,7 +49,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user) -> Token:
         token = super().get_token(user)
         
-        groups = [group.name for group in user.groups.all()]
+        groups = [group.name for group in user.groups.all()]    
         
         token['full_name'] = user.profile.full_name
         token['username'] = user.username

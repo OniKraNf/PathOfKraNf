@@ -26,7 +26,7 @@ const Navbar = ({ className } : { className?: string }) => {
         </MenuItem> 
         <MenuItem setActive={setActive} active={active} item="Economy">
           <div className='flex flex-col space-y-4 text-sm'>
-            <HoveredLink href='/economy'>Price</HoveredLink>
+            <HoveredLink href='/economy'>Economy</HoveredLink>
           </div>
         </MenuItem>
         <MenuItem setActive={setActive} active={active} item='Trade'>
